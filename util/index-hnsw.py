@@ -1,15 +1,31 @@
-# Constants
-DATA_FOLDER = './data/'
-METADATA_PATH = path.join(DATA_FOLDER, 'metadata.csv')
-SPECTER_PATH = path.join(DATA_FOLDER, 'specter.csv')
+import hnswlib
+import numpy as np
+import helper
 
-# TOTAL_NUM_ELEMENTS = 0
-# ELEMENTS = []
-# HNSW = None
-# PROCESSED = []
+# Constants
+metadata = {}
+embedding = {}
+HNSW = None
+DIM = None
+TOTAL_NUM_ELEMENTS = None
+
+
+# Utils
+def loadData():
+    global metadata, embedding, DIM, TOTAL_NUM_ELEMENTS
+    metadata = helper.loadMetadata()
+    print('Metadata Length:', len(metadata))
+    embedding, DIM = helper.loadEmbedding()
+    print('Number of Embedding:', len(embedding))
+    print('Embedding Dimension:', DIM)
+
+    assert len(metadata) == len(embedding), "Data Size Mismatch"
+    TOTAL_NUM_ELEMENTS = len(metadata)
+    print('Total Elements:', TOTAL_NUM_ELEMENTS)
+
 
 def initializeIndex():
-    global DIM, PATH, TOTAL_NUM_ELEMENTS, ELEMENTS, HNSW, PROCESSED
+    global HNSW, DIM
 
     # Declaring index
     # possible options are l2, cosine or ip
@@ -20,66 +36,53 @@ def initializeIndex():
     HNSW.init_index(max_elements=TOTAL_NUM_ELEMENTS, ef_construction=200, M=16)
 
 
-def addAndSaveIndex(data, data_labels, index):
+def addAndSaveIndex(data, data_labels, index_to_uid, index):
     print('>> [Pre-process] hnswlib indexing', index)
-    global DIM, PATH, TOTAL_NUM_ELEMENTS, ELEMENTS, HNSW
+    global DIM, TOTAL_NUM_ELEMENTS, HNSW
     # Element insertion (can be called several times):
     HNSW.add_items(data, data_labels)
-    # Save Phase 1
-    output_path = f'./bin/{index}.bin'
-    removeIfExist(output_path)
+    # Save index bin file
+    output_path = f'./data/{index}.bin'
+    helper.removeIfExist(output_path)
     HNSW.save_index(output_path)
-    # Save Phase 2
-    output_path = f'./bin/{index}.txt'
-    removeIfExist(output_path)
-    output = open(output_path, "w")
-    for i in PROCESSED:
-        output.write(i + '\n')
-    output.close()
+    # Save index to uid file
+    helper.saveIndexToUidFile(index_to_uid, index)
 
 
+# Main Function
 def main(loadFromIndex=None):
-    global DIM, PATH, TOTAL_NUM_ELEMENTS, ELEMENTS, HNSW, PROCESSED
+    global DIM, TOTAL_NUM_ELEMENTS, HNSW
     print('>> [Pre-process] starting')
     data = np.empty((0, DIM))
     data_labels = []
+    index_to_uid = []
 
-    inputfile = open(PATH, 'r')
-    ELEMENTS = ['img/'+p.strip() for p in inputfile.readlines()]
-    TOTAL_NUM_ELEMENTS = len(ELEMENTS)
-    print(f'>> [Pre-process] Detected {TOTAL_NUM_ELEMENTS} elements')
-
-    initializeIndex()
-    if loadFromIndex is not None:
-        loadIndex(loadFromIndex)
-    else:
-        print("Fresh Start")
-
-    for index, path in enumerate(ELEMENTS):
-        if loadFromIndex is not None and index < loadFromIndex:
-            continue
-
-        if index % 10000 == 0:
+    for index, uid in enumerate(embedding):
+        if index % 100 == 0:
             print(f'>> [Pre-process][{index}/{TOTAL_NUM_ELEMENTS}]')
 
-        if index % 10000 == 0 and len(data_labels) > 0:
+        if index % 1000 == 0 and len(data_labels) > 0:
             # save progress
-            addAndSaveIndex(data, data_labels, index)
+            addAndSaveIndex(data, data_labels, index_to_uid, index)
             # reset
             data = np.empty((0, DIM))
             data_labels = []
 
-        current_vector = extract_features_by_path(path)
-        prediction = predict_by_path(path)
-        data = np.concatenate((data, current_vector))
+        vector = embedding[uid]
+        assert len(vector) == DIM, "Vector Dimension Mismatch"
+        data = np.concatenate((data, [vector]))
         data_labels.append(index)
-        PROCESSED.append(path[4:])  # remove "img/" prefix
+        index_to_uid.append(uid)
 
     if len(data_labels) > 0:
-        addAndSaveIndex(data, data_labels, index)
+        addAndSaveIndex(data, data_labels, index_to_uid, len(data))
+        print(f'>> [Pre-process][{len(data)}/{TOTAL_NUM_ELEMENTS}]')
 
     print('<< [Pre-process] done')
 
 
+# Trigger
 if __name__ == '__main__':
+    loadData()
+    initializeIndex()
     main()
