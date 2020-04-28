@@ -37,7 +37,7 @@ def initializeIndex():
 
 
 def addAndSaveIndex(data, data_labels, index_to_uid, index):
-    print('>> [Pre-process] hnswlib indexing', index)
+    print('>> [Pre-process] saving hnswlib index', index)
     global DIM, TOTAL_NUM_ELEMENTS, HNSW
     # Element insertion (can be called several times):
     HNSW.add_items(data, data_labels)
@@ -75,8 +75,8 @@ def main(loadFromIndex=None):
         index_to_uid.append(uid)
 
     if len(data_labels) > 0:
-        addAndSaveIndex(data, data_labels, index_to_uid, len(data))
-        print(f'>> [Pre-process][{len(data)}/{TOTAL_NUM_ELEMENTS}]')
+        addAndSaveIndex(data, data_labels, index_to_uid, index)
+        print(f'>> [Pre-process][{index}/{TOTAL_NUM_ELEMENTS}]')
 
     print('<< [Pre-process] done')
 

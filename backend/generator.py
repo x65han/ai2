@@ -2,6 +2,7 @@ import os
 import hnswlib
 from random import randint
 from util import helper
+from flask import url_for
 
 # Constants
 DIM = None
@@ -44,6 +45,7 @@ def gen_random(uid, pageNumber=1):
             'uid': uid,
             'url': gen_url_from_uid(uid),
             'title': gen_title_from_uid(uid),
+            'refURL': get_reference_url(uid),
         })
 
     return srcDoc, res
@@ -90,3 +92,6 @@ def gen_metadata_from_uid(uid, field):
         return item[field]
 
     return None
+
+def get_reference_url(uid):
+    return url_for('serveReact', path=uid, _external=True)

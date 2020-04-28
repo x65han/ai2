@@ -46,7 +46,7 @@ def redirectToDocumentURL(uid):
 # Trigger Server
 if __name__ == '__main__':
     # Preparation
-    index = 22000
+    index = 57000
     loadMetadata(index)
     loadHNSW(index)
     # Production Mode
