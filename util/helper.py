@@ -1,5 +1,6 @@
 import os
 import csv
+from typing import List
 
 
 def removeIfExist(path):
@@ -12,10 +13,31 @@ def mkdirIfNotExist(directory):
         os.makedirs(directory)
 
 
-def loadMetadata():
+def saveKeys(path, keys: List[str]) -> None:
+    removeIfExist(path)
+
+    with open(path, 'w+') as f:
+        for key in keys:
+            f.write(f"{key}\n")
+
+    print(f'[Saved] {len(keys)} keys -> {path}')
+
+
+def loadKeys(path) -> List[str]:
+    res = []
+    with open(path, 'r') as f:
+        while True:
+            line = f.readline().strip()
+            if line is None or len(line) == 0:
+                break
+            res.append(line)
+
+    return res
+
+
+def loadMetadata(path='./data/metadata.csv'):
     res = {}
     headers = None
-    path = './data/metadata.csv'
 
     with open(path, newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='"')
@@ -56,8 +78,9 @@ def loadEmbedding():
     return res, vectorDimension
 
 
-def saveIndexToUidFile(index_to_uid, index):
-    path = f'./data/{index}.txt'
+def saveIndexToUidFile(index_to_uid, index, path=None):
+    if path is None:
+        path = f'./data/{index}.txt'
     removeIfExist(path)
 
     with open(path, 'w') as f:

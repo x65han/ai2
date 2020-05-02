@@ -43,9 +43,13 @@ def gen_random(uid, pageNumber=1):
         res.append({
             'distance': str(dist),
             'uid': uid,
-            'url': gen_url_from_uid(uid),
-            'title': gen_title_from_uid(uid),
+            'url': gen_metadata_from_uid(uid, 'url'),
+            'title': gen_metadata_from_uid(uid, 'title'),
             'refURL': get_reference_url(uid),
+            'authors': gen_metadata_from_uid(uid, 'authors'),
+            'journal': gen_metadata_from_uid(uid, 'journal'),
+            'publish_time': gen_metadata_from_uid(uid, 'publish_time'),
+            'abstract': gen_metadata_from_uid(uid, 'abstract'),
         })
 
     return srcDoc, res

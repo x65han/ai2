@@ -36,17 +36,20 @@ def initializeIndex():
     HNSW.init_index(max_elements=TOTAL_NUM_ELEMENTS, ef_construction=200, M=16)
 
 
-def addAndSaveIndex(data, data_labels, index_to_uid, index):
-    print('>> [Pre-process] saving hnswlib index', index)
+def addAndSaveIndex(data, data_labels, index_to_uid, index, save=False):
+    print('>> [Pre-process] adding hnswlib index', index)
     global DIM, TOTAL_NUM_ELEMENTS, HNSW
     # Element insertion (can be called several times):
     HNSW.add_items(data, data_labels)
     # Save index bin file
-    output_path = f'./data/{index}.bin'
-    helper.removeIfExist(output_path)
-    HNSW.save_index(output_path)
-    # Save index to uid file
-    helper.saveIndexToUidFile(index_to_uid, index)
+    if save is True:
+        print('>> [Pre-process] saving hnswlib index', index)
+        final_path = './data/cord19-hnsw'
+        output_path =f'{final_path}.bin'
+        helper.removeIfExist(output_path)
+        HNSW.save_index(output_path)
+        # Save index to uid file
+        helper.saveIndexToUidFile(index_to_uid, index, f'{final_path}.txt')
 
 
 # Main Function
@@ -75,7 +78,7 @@ def main(loadFromIndex=None):
         index_to_uid.append(uid)
 
     if len(data_labels) > 0:
-        addAndSaveIndex(data, data_labels, index_to_uid, index)
+        addAndSaveIndex(data, data_labels, index_to_uid, index, save=True)
         print(f'>> [Pre-process][{index}/{TOTAL_NUM_ELEMENTS}]')
 
     print('<< [Pre-process] done')

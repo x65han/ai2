@@ -10,6 +10,10 @@ interface Packet {
     url: string,
     title: string,
     refURL: string,
+    authors: string,
+    journal: string,
+    publish_time: string,
+    abstract: string,
 }
 
 interface Props { }
@@ -85,7 +89,10 @@ class App extends React.Component<Props, State> {
             <div style={{ margin: '100px' }}>
                 <table >
                     <tr>
-                        <th>Distance</th>
+                        <th>Authors</th>
+                        <th>Journal</th>
+                        <th>Publish Time</th>
+                        <th>Abstract</th>
                         <th>Title</th>
                         <th>Paper URL</th>
                         <th>Use as Source</th>
@@ -93,7 +100,10 @@ class App extends React.Component<Props, State> {
                     {
                         packets.map(packet => (
                             <tr key={packet.uid}>
-                                <th>{packet.distance}</th>
+                                <th>{packet.authors}</th>
+                                <th>{packet.journal}</th>
+                                <th>{packet.publish_time}</th>
+                                <th>{packet.abstract}</th>
                                 <th>{packet.title}</th>
                                 <th>
                                     <a target="__blank" href={packet.url}>View Paper</a>
