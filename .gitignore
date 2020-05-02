@@ -2,3 +2,6 @@ monitor.sh
 data/
 __pycache__
 .DS_Store
+.vscode/
+ui/build.zip
+ui/build/

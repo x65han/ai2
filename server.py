@@ -1,7 +1,7 @@
 from flask_cors import CORS
 import os
 from flask import Flask, redirect, jsonify, send_from_directory, abort, request, redirect, url_for
-from backend.generator import loadMetadata, loadHNSW, gen_random, gen_url_from_uid
+from backend.generator import loadMetadata, loadHNSW, gen_random, gen_url_from_uid, gen_random_diff
 app = Flask(__name__, static_folder='ui/build')
 
 # Local Web Dev Allow CORS
@@ -19,6 +19,17 @@ def generateImages(uid):
         return abort(404)
     else:
         return jsonify(sample=res, srcDoc=srcDoc)
+
+@app.route('/genDiff/', defaults={'uid': None})
+@app.route('/genDiff', defaults={'uid': None})
+@app.route('/genDiff/<string:uid>', methods=["GET"])
+def generateDiffImages(uid):
+    print(f'[GEN DIFF]', uid)
+    source, res = gen_random_diff(uid)
+    if res is False:
+        return abort(404)
+    else:
+        return jsonify(sample=res, source=source)
 
 
 # Serve React App
@@ -46,9 +57,8 @@ def redirectToDocumentURL(uid):
 # Trigger Server
 if __name__ == '__main__':
     # Preparation
-    index = 57000
-    loadMetadata(index)
-    loadHNSW(index)
+    loadMetadata()
+    loadHNSW()
     # Production Mode
     app.run(
         host='0.0.0.0',

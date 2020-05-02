@@ -88,9 +88,9 @@ def saveIndexToUidFile(index_to_uid, index, path=None):
             f.write(f"{index} {uid}\n")
 
 
-def loadIndexToUidFile(index):
+def loadIndexToUidFile():
     res = []
-    path = f'./data/{index}.txt'
+    path = f'./data/cord19-hnsw.txt'
 
     with open(path, 'r') as f:
         for line in f:

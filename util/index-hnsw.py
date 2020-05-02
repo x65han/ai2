@@ -61,10 +61,10 @@ def main(loadFromIndex=None):
     index_to_uid = []
 
     for index, uid in enumerate(embedding):
-        if index % 100 == 0:
+        if index % 200 == 0:
             print(f'>> [Pre-process][{index}/{TOTAL_NUM_ELEMENTS}]')
 
-        if index % 1000 == 0 and len(data_labels) > 0:
+        if index % 200 == 0 and len(data_labels) > 0:
             # save progress
             addAndSaveIndex(data, data_labels, index_to_uid, index)
             # reset
