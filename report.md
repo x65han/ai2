@@ -16,7 +16,7 @@ Table 1. Basic stats
 | Judged@10 | 0.4971      | 0.937      |
 | ndcg@10   | 0.3254      | 0.6250     |
 
-> covidex.t5 was tagged as contributing to the pool hence the more docs in covidex.t5 are judged. covidex.t5 performs so well that it almost doubled the score of covidex.sim.
+> covidex.t5 was tagged as contributing to the pool hence more docs in covidex.t5 are judged. covidex.t5 performs so well that it almost doubled the score of covidex.sim.
 
 Now if we removed all un-judged docs (based on qrels-rnd2.txt)
 
@@ -25,7 +25,7 @@ Now if we removed all un-judged docs (based on qrels-rnd2.txt)
 | Judged@10 | 1           | 1          |
 | ndcg@10   | 0.5958      | 0.6499     |
 
-> Naturally, both will have a Judged@10 of 1. We also see a jumpy in ndcg@10 for both. covidex.t5 jumped by a little and covidx.sim jump by a lot. The increase in covidex.sim is large enough that it almost catches up to covidex.t5, but still 0.5 apart by ndcg@10. It seems to me that even covidex.sim < covidex.t5 even if covidex.sim is tagged as contributing to the pool.
+> Naturally, both will have a Judged@10 of 1. We see a jumpy in ndcg@10 for both. covidex.t5 jumped by a little and covidx.sim jump by a lot. The increase in covidex.sim is large enough that it almost catches up to covidex.t5, but still 0.5 apart by ndcg@10. It seems to me that covidex.sim < covidex.t5 even if covidex.sim is tagged as contributing to the pool.
 
 With un-judged docs removed, here's the per-topic breakdown.
 
@@ -79,15 +79,15 @@ Zooming into Topic 3, covidex.t5 beats covidex.sim by a long shot with a ndcg@10
 | od97az43    |    4 |                2 | Modelling the transmission dynamics of COVID-19 in six high burden countries |
 | dufooku2    |    5 |                0 | The impact of current and future control measures on the spread of COVID-19 in Germany |
 
-> Topic 9's question prompt is "how has COVID-19 affected Canada?" It seems like HNSW does a poor job finding relevant documents for this topic. It's really a hit or miss, but HNSW believes that these are the top 5 related documents to topic 9. Docs with rank 1, 3 & 5 are irrelevant since it's talking about other countries such as USA and Germany. HNSW believes its relevant since it's talking about how COVID-19 has affected other countries. I'm guessing here the word vector embedding for Canada is very close to USA and Germany since these are all country related words. But with HNSW, there's no way to emphasis that we value the term "Canada" more than "the influence of COVID". SPECTER embedding is great at capturing the essense of documents' meaning in vectors; we can't argue that it's wrong in this case. HNSW is not wrong either for calculating a simple L2 distance between two vectors. Maybe we need to utilize the embedding in a more fine-tune way to control the definition of relevancy to improve the performance of this method for round 3.
+> Topic 9's question prompt is "how has COVID-19 affected Canada?" It seems like HNSW does a poor job finding relevant documents for this topic. It's really a hit or miss, but HNSW believes that these are the top 5 related documents to topic 9. Docs with rank 1, 3 & 5 are irrelevant since it's talking about other countries such as USA and Germany. HNSW believes its relevant since it's talking about how COVID-19 has affected countries in general. I'm guessing here the word vector embedding for Canada is very close to USA and Germany since these are all country related words. But with HNSW, there's no way to emphasize that we value the term "Canada" more than "the influence of COVID". SPECTER embedding is great at capturing the essense of documents' meaning in vector notations; we can't argue that it's wrong in this case. HNSW is not wrong either for calculating a simple L2 distance between two vectors. Maybe we need to utilize the embedding in a more fine-tune way to control the definition of relevancy to improve the performance of this method for round 3.
 
 
 # Personal Reflection
 
 This is my first round of TREC COVID. Throughout this process, I was quite confused with what's going on and how different pieces fit together. Looking back, I have a much clearer picture now with what to expect, what to do and what to focus on for the next round. Hopefully, I can start to make some suggestions on our approach and critically analyze why A performs better than B. 
 
-I spent half a day today to replicate covid.sim, which is a strong signal for better software engineering practice. I need to improve my file/variable naming and organize my folder structure better (especially when running many experiment that are very similar but with different parameters). 
+I spent half a day today trying to replicate covid.sim, which is a strong signal for better software engineering practice. I need to improve my file/variable naming and organize my script/folder structure better (especially when running many experiments that are very similar but with different parameters). 
 
-Special thanks to Rodrigo and Prof. Lin for guiding me through this process.
+Special thanks to Rodrigo and Prof. Lin for guiding me throughout this process.
 
 Onward to round 3 🚀
