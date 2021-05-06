@@ -2,4 +2,4 @@ Flask
 gunicorn
 pybind11==2.4.3
 hnswlib==0.3.4
-Flask-Cors==3.0.6
+Flask-Cors==3.0.9
